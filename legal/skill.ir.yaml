@@ -1,9 +1,12 @@
----
-name: legal
-description: Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates with customer details filled in.
-argument-hint: <document-type> [customer-name]
----
+# Antidrift Skill IR — do not edit manually
 
+name: "legal"
+description: "Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates with customer details filled in."
+argument-hint: "<document-type> [customer-name]"
+auto-invoke: true
+source: "claude"
+
+---instructions---
 Generates legal documents from templates. Available documents:
 
 - **nda** — Mutual Non-Disclosure Agreement

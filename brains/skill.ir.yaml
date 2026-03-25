@@ -1,9 +1,12 @@
----
-name: brains
-description: List connected brains and query across them. Read files from related brains without switching.
-argument-hint: [brain-name] [question]
----
+# Antidrift Skill IR — do not edit manually
 
+name: "brains"
+description: "List connected brains and query across them. Read files from related brains without switching."
+argument-hint: "[brain-name] [question]"
+auto-invoke: true
+source: "claude"
+
+---instructions---
 Connected brains are listed in `.claude/brains.json` in the current brain's root.
 
 ## Instructions
