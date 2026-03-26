@@ -9,6 +9,9 @@ import tempfile
 from pathlib import Path
 
 REPO = "probeo-io/antidrift-skills"
+REGISTRY_URL = f"https://api.github.com/repos/{REPO}/contents/registry.json"
+
+_registry_cache = None
 
 
 def run(cmd: str, **kwargs) -> subprocess.CompletedProcess:
@@ -31,42 +34,29 @@ Usage:
 """)
 
 
-def fetch_registry() -> list[str]:
+def fetch_registry() -> list[dict]:
+    global _registry_cache
+    if _registry_cache is not None:
+        return _registry_cache
     try:
         result = run(
-            f"gh api repos/{REPO}/git/trees/main --jq '.tree[] | select(.type==\"tree\") | .path'",
+            f'curl -sf -H "Accept: application/vnd.github.raw+json" "{REGISTRY_URL}"',
             capture_output=True, text=True, check=True,
         )
-        return [line for line in result.stdout.strip().split("\n") if line]
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("  Could not fetch registry. Make sure gh is installed and authenticated.\n")
+        _registry_cache = json.loads(result.stdout)
+        return _registry_cache
+    except (subprocess.CalledProcessError, json.JSONDecodeError):
+        print("  Could not fetch registry.\n")
         sys.exit(1)
-
-
-def fetch_skill_meta(name: str) -> dict:
-    try:
-        result = run(
-            f"gh api repos/{REPO}/contents/{name}/SKILL.md --jq '.content' | base64 -d",
-            capture_output=True, text=True, check=True,
-        )
-        content = result.stdout
-        import re
-        match = re.search(r"^---\n(.*?)\n---", content, re.DOTALL)
-        if not match:
-            return {"name": name, "description": ""}
-        frontmatter = match.group(1)
-        desc_match = re.search(r"^description:\s*(.+)$", frontmatter, re.MULTILINE)
-        description = desc_match.group(1).strip() if desc_match else ""
-        return {"name": name, "description": description}
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return {"name": name, "description": ""}
 
 
 def get_installed_skills() -> list[str]:
     skills_dir = Path.cwd() / ".claude" / "skills"
     if not skills_dir.exists():
         return []
-    return [d.name for d in skills_dir.iterdir() if d.is_dir() and (d / "SKILL.md").exists()]
+    return [d.name for d in skills_dir.iterdir() if d.is_dir() and (
+        (d / "SKILL.md").exists() or (d / "skill.ir.yaml").exists()
+    )]
 
 
 def clone_registry() -> Path:
@@ -79,17 +69,16 @@ def clone_registry() -> Path:
 
 
 def list_skills():
-    available = fetch_registry()
+    registry = fetch_registry()
     installed = set(get_installed_skills())
 
     print()
-    for name in available:
-        meta = fetch_skill_meta(name)
-        status = "✓" if name in installed else "○"
-        print(f"  {status} {meta['name']:<12} {meta['description']}")
+    for skill in registry:
+        status = "✓" if skill["name"] in installed else "○"
+        print(f"  {status} {skill['name']:<12} {skill['description']}")
 
-    installed_count = len([n for n in available if n in installed])
-    print(f"\n  {installed_count}/{len(available)} installed\n")
+    installed_count = len([s for s in registry if s["name"] in installed])
+    print(f"\n  {installed_count}/{len(registry)} installed\n")
 
 
 def add_skills(names: list[str]):
@@ -98,7 +87,9 @@ def add_skills(names: list[str]):
         print("         antidrift-skills add --all\n")
         return
 
-    available = fetch_registry()
+    registry = fetch_registry()
+    available = [s["name"] for s in registry]
+
     if "--all" in names:
         to_install = available
     else:
@@ -127,7 +118,6 @@ def add_skills(names: list[str]):
         else:
             print(f"  ✗ {skill} — not found in clone")
 
-    # Clean up
     shutil.rmtree(registry_dir.parent, ignore_errors=True)
 
     s = "" if len(to_install) == 1 else "s"
