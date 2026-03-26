@@ -1,3 +1,4 @@
 [
-  {"name":"","description":""}
+  {"name":"brains","description":"List connected brains and query across them. Read files from related brains without switching."},
+  {"name":"legal","description":"Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates with customer details filled in."}
 ]
