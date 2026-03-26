@@ -1,0 +1,35 @@
+name: Build registry
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build registry.json
+        run: |
+          echo "[" > registry.json
+          first=true
+          for skill in */SKILL.md; do
+            dir=$(dirname "$skill")
+            name=$(grep -m1 '^name:' "$skill" | sed 's/^name:\s*//' | tr -d '"')
+            desc=$(grep -m1 '^description:' "$skill" | sed 's/^description:\s*//' | tr -d '"')
+            if [ "$first" = true ]; then first=false; else echo "," >> registry.json; fi
+            printf '  {"name":"%s","description":"%s"}' "$name" "$desc" >> registry.json
+          done
+          echo "" >> registry.json
+          echo "]" >> registry.json
+          cat registry.json
+
+      - name: Commit registry.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add registry.json
+          git diff --staged --quiet || git commit -m "build: update registry.json" && git push
