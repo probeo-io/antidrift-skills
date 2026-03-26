@@ -1,5 +1,4 @@
 [
-  {"name":"brains","description":"List connected brains and query across them. Read files from related brains without switching."},
   {"name":"changelog","description":"Generate a changelog from recent git commits across projects."},
   {"name":"decision","description":"Log a decision with context and reasoning. Use when a choice was made and the team should know why."},
   {"name":"followup","description":"Draft a follow-up email after a meeting using customer context and brand voice from the brain."},
