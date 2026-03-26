@@ -16,10 +16,15 @@ jobs:
         run: |
           echo "[" > registry.json
           first=true
-          for skill in */SKILL.md; do
-            dir=$(dirname "$skill")
-            name=$(grep -m1 '^name:' "$skill" | sed 's/^name:\s*//' | tr -d '"')
-            desc=$(grep -m1 '^description:' "$skill" | sed 's/^description:\s*//' | tr -d '"')
+          for dir in */; do
+            dir="${dir%/}"
+            # Skip non-skill dirs
+            [ ! -f "$dir/SKILL.md" ] && [ ! -f "$dir/skill.ir.yaml" ] && continue
+            file="$dir/SKILL.md"
+            [ ! -f "$file" ] && file="$dir/skill.ir.yaml"
+            name=$(grep -m1 '^name:' "$file" | sed 's/^name:\s*//' | tr -d '"')
+            desc=$(grep -m1 '^description:' "$file" | sed 's/^description:\s*//' | tr -d '"')
+            [ -z "$name" ] && continue
             if [ "$first" = true ]; then first=false; else echo "," >> registry.json; fi
             printf '  {"name":"%s","description":"%s"}' "$name" "$desc" >> registry.json
           done
