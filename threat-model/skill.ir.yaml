@@ -1,0 +1,99 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "threat-model"
+description: "Generate a threat model from architecture context. Uses STRIDE methodology to identify threats and mitigations."
+argument-hint: "<system or feature name>"
+auto-invoke: true
+source: "claude"
+pack: "security"
+
+---instructions---
+Generates a threat model using the STRIDE methodology based on architecture context from the brain.
+
+## Instructions
+
+### Step 1 — What are we modeling?
+
+Check `$ARGUMENTS` for the system or feature name. If not provided, ask: "What system or feature should I threat model?"
+
+### Step 2 — Gather architecture context
+
+Read from the brain:
+- `engineering/CLAUDE.md` — architecture, stack
+- `engineering/specs/` — any relevant specs
+- `projects.md` — project details
+- `devops/CLAUDE.md` — infrastructure, deploy setup
+
+If architecture docs don't exist, ask the user to describe:
+- What components exist (APIs, databases, queues, etc.)
+- How data flows between them
+- Where external users interact
+- What authentication is used
+
+### Step 3 — Identify assets and trust boundaries
+
+```markdown
+## Assets
+<what's valuable — user data, credentials, business logic>
+
+## Trust Boundaries
+<where trust levels change — internet → load balancer → app → database>
+
+## Data Flows
+<how data moves through the system>
+```
+
+### Step 4 — Apply STRIDE
+
+For each component and data flow, evaluate:
+
+| Threat | Question |
+|--------|----------|
+| **S**poofing | Can an attacker pretend to be someone else? |
+| **T**ampering | Can data be modified in transit or at rest? |
+| **R**epudiation | Can actions be denied without evidence? |
+| **I**nformation Disclosure | Can data leak to unauthorized parties? |
+| **D**enial of Service | Can the system be made unavailable? |
+| **E**levation of Privilege | Can a user gain unauthorized access? |
+
+### Step 5 — Generate the threat model
+
+```markdown
+# Threat Model — <system name>
+**Date:** <today>
+**Methodology:** STRIDE
+
+## System Overview
+<brief description + architecture diagram in text>
+
+## Assets
+<what we're protecting>
+
+## Trust Boundaries
+<where trust changes>
+
+## Threats
+
+### T-001: <threat title>
+- **Category:** <STRIDE category>
+- **Component:** <what's affected>
+- **Risk:** Critical / High / Medium / Low
+- **Description:** <how the attack works>
+- **Mitigation:** <how to prevent it>
+- **Status:** Open / Mitigated / Accepted
+
+### T-002: ...
+
+## Risk Matrix
+
+| ID | Threat | Category | Risk | Status |
+|----|--------|----------|------|--------|
+| T-001 | ... | Spoofing | High | Open |
+
+## Recommendations
+<prioritized actions>
+```
+
+### Step 6 — Save
+
+Save to `engineering/security/threat-model-<slug>.md`.

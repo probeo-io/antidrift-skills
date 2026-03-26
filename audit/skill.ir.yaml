@@ -1,0 +1,124 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "audit"
+description: "Security audit — scan codebase for OWASP top 10, exposed secrets, dependency vulnerabilities, and misconfigurations."
+argument-hint: "[project path]"
+auto-invoke: true
+source: "claude"
+pack: "security"
+
+---instructions---
+Runs a security audit on a codebase. Checks for OWASP top 10 vulnerabilities, exposed secrets, dependency issues, and common misconfigurations.
+
+## Instructions
+
+### Step 1 — Which codebase?
+
+Check `$ARGUMENTS` for a project path. If not provided, check `.claude/local.json` for known projects and ask which one. If no projects registered, use the current directory.
+
+### Step 2 — Dependency audit
+
+Check for known vulnerabilities in dependencies:
+
+```bash
+# Node.js
+npm audit --json 2>/dev/null || true
+
+# Python
+pip audit 2>/dev/null || safety check 2>/dev/null || true
+
+# Go
+govulncheck ./... 2>/dev/null || true
+```
+
+### Step 3 — Secret scanning
+
+Search for exposed secrets and credentials:
+
+```bash
+# Common patterns
+grep -rn --include="*.ts" --include="*.js" --include="*.py" --include="*.go" --include="*.env" --include="*.yaml" --include="*.yml" --include="*.json" \
+  -E '(password|secret|api_key|apikey|token|private_key|aws_access|AKIA)\s*[:=]' . \
+  | grep -v node_modules | grep -v .git | grep -v dist
+```
+
+Check for:
+- Hardcoded API keys, passwords, tokens
+- `.env` files committed to git
+- Private keys in the repo
+- AWS/GCP/Azure credentials
+- Database connection strings with passwords
+
+### Step 4 — OWASP Top 10 code review
+
+Read through the codebase looking for:
+
+1. **Injection** — SQL injection, command injection, XSS
+   - Raw SQL queries with string concatenation
+   - `exec()`, `eval()`, `child_process.exec()` with user input
+   - Unescaped HTML output
+
+2. **Broken Authentication**
+   - Weak password requirements
+   - Session tokens in URLs
+   - Missing rate limiting on auth endpoints
+
+3. **Sensitive Data Exposure**
+   - Logging sensitive data
+   - Returning passwords/tokens in API responses
+   - Missing encryption for data at rest/transit
+
+4. **Security Misconfiguration**
+   - Debug mode in production configs
+   - Default credentials
+   - Overly permissive CORS
+   - Missing security headers
+
+5. **Vulnerable Components**
+   - Outdated dependencies (from step 2)
+   - Known CVEs
+
+### Step 5 — Report
+
+```markdown
+# Security Audit — <project name>
+**Date:** <today>
+**Auditor:** antidrift /audit
+
+## Summary
+- **Critical:** <count>
+- **High:** <count>
+- **Medium:** <count>
+- **Low:** <count>
+- **Info:** <count>
+
+## Findings
+
+### CRITICAL
+
+#### [C-001] <title>
+- **Category:** <OWASP category>
+- **Location:** <file:line>
+- **Description:** <what's wrong>
+- **Impact:** <what could happen>
+- **Fix:** <how to fix it>
+
+### HIGH
+...
+
+### MEDIUM
+...
+
+## Dependency Vulnerabilities
+<from npm audit / pip audit / govulncheck>
+
+## Exposed Secrets
+<any secrets found — redact the actual values>
+
+## Recommendations
+1. <prioritized action items>
+```
+
+### Step 6 — Save
+
+Save to `engineering/security/audit-<date>.md`. Create the directory if needed.

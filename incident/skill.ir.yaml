@@ -1,0 +1,89 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "incident"
+description: "Incident response — create a structured incident report with timeline, impact assessment, and action items."
+argument-hint: "<incident description>"
+auto-invoke: true
+source: "claude"
+pack: "security"
+
+---instructions---
+Creates a structured incident response document. Guides through triage, timeline, impact, and follow-up.
+
+## Instructions
+
+### Step 1 — What happened?
+
+Check `$ARGUMENTS` for the incident description. If not provided, ask: "What happened? Give me the basics."
+
+### Step 2 — Triage
+
+Ask these in order (skip what's already clear):
+- **Severity:** Critical (data breach, service down) / High (partial outage, security issue) / Medium (degraded service) / Low (minor issue)
+- **When did it start?** (or when was it discovered)
+- **What's affected?** (services, users, data)
+- **Is it ongoing?** (still happening or resolved)
+- **Who knows?** (has it been communicated externally)
+
+### Step 3 — Build the incident report
+
+```markdown
+# Incident Report — <title>
+
+**ID:** INC-<YYYY-MM-DD>-<number>
+**Severity:** <Critical / High / Medium / Low>
+**Status:** <Active / Monitoring / Resolved / Post-mortem Complete>
+**Commander:** <who's leading the response>
+**Date:** <today>
+
+## Summary
+<1-2 sentence description>
+
+## Impact
+- **Users affected:** <count or scope>
+- **Services affected:** <list>
+- **Data affected:** <what data, if any>
+- **Duration:** <start time — end time or ongoing>
+- **Revenue impact:** <estimated if known>
+
+## Timeline
+
+| Time (UTC) | Event |
+|------------|-------|
+| HH:MM | <incident detected / reported> |
+| HH:MM | <first response action> |
+| HH:MM | <escalation / additional responders> |
+| HH:MM | <root cause identified> |
+| HH:MM | <fix deployed> |
+| HH:MM | <incident resolved> |
+
+## Root Cause
+<what caused the incident — be specific>
+
+## Resolution
+<what was done to fix it>
+
+## Action Items
+
+| Priority | Action | Owner | Due |
+|----------|--------|-------|-----|
+| P0 | <immediate fix> | <who> | <when> |
+| P1 | <prevent recurrence> | <who> | <when> |
+| P2 | <improve detection> | <who> | <when> |
+
+## Lessons Learned
+- What went well
+- What didn't go well
+- What we'll do differently
+
+## Communication Log
+| Time | Audience | Channel | Message |
+|------|----------|---------|---------|
+| HH:MM | <internal/external> | <Slack/email/status page> | <summary> |
+```
+
+### Step 4 — Save
+
+Save to `engineering/security/incidents/INC-<date>-<slug>.md`. Create the directory if needed.
+
+If this is a critical or high severity incident, suggest updating relevant brain files (engineering/CLAUDE.md, devops/CLAUDE.md) with lessons learned.
