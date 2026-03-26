@@ -1,0 +1,105 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "tps"
+description: "Generate a TPS report — what was built, fixed, and shipped. From git history, not memory."
+argument-hint: "[today | week | sprint | <since date>]"
+auto-invoke: true
+source: "claude"
+pack: "engineering"
+
+---instructions---
+Generates a TPS report from git history. Real work, not fluff.
+
+Yeah, that TPS report. But this one is actually useful.
+
+## Instructions
+
+### Step 1 — Time range
+
+Check `$ARGUMENTS`:
+- No args or `today` → last 24 hours
+- `week` → last 7 days
+- `sprint` → last 14 days (or since last tag matching `sprint-*` or `v*`)
+- A date → since that date
+- `cover-sheet` → remind them to use the new cover sheet on their TPS reports
+
+### Step 2 — Gather the work
+
+Check `.claude/local.json` for project paths. For each project (and the brain itself):
+
+```bash
+git log --since="<date>" --oneline --stat --no-merges
+```
+
+Also check:
+- Files created/modified in the brain during this period
+- Decisions logged in `decisions/`
+- Any specs written in `engineering/specs/`
+
+### Step 3 — Build the report
+
+```markdown
+# TPS Report — <date range>
+
+## Summary
+<1-2 sentence overview of the period>
+
+## By Project
+
+### <project name>
+**Commits:** <count>
+- <grouped summary of what was done — not raw commit messages>
+- <features built, bugs fixed, refactors>
+
+**Files changed:** <count> | **Lines:** +<added> / -<removed>
+
+### <next project>
+...
+
+## Brain Updates
+- <departments updated>
+- <decisions logged>
+- <specs written>
+
+## Highlights
+- <biggest accomplishment>
+- <shipped items>
+
+## In Progress
+- <work started but not finished — branches without merges>
+
+## Stats
+| Metric | Value |
+|--------|-------|
+| Projects touched | <count> |
+| Total commits | <count> |
+| Files changed | <count> |
+| Lines written | +<added> |
+| Lines removed | -<removed> |
+```
+
+### Step 4 — Output
+
+Show the report. Don't save it unless asked — TPS reports are ephemeral.
+
+If they say "save it", put it in `engineering/tps/<date>.md`.
+
+### Cover Sheet
+
+If `$ARGUMENTS` is `cover-sheet`:
+
+```
+  ┌─────────────────────────────────────────────┐
+  │                                             │
+  │   Did you get the memo about the TPS        │
+  │   reports? Yeah... we're using the new      │
+  │   cover sheets now. So if you could go      │
+  │   ahead and use the new cover sheets        │
+  │   from now on, that'd be great.             │
+  │                                             │
+  │                          — Bill Lumbergh    │
+  │                                             │
+  └─────────────────────────────────────────────┘
+```
+
+Then generate the actual report anyway because you're not a monster.

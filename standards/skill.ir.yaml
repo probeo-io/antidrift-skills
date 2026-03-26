@@ -1,0 +1,112 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "standards"
+description: "Generate coding standards from your existing codebase. Infers patterns from what's already there."
+argument-hint: "[project path]"
+auto-invoke: true
+source: "claude"
+pack: "engineering"
+
+---instructions---
+Generates coding standards by reading the actual codebase and inferring the patterns the team already follows. Not a generic template — standards that match how you actually write code.
+
+## Instructions
+
+### Step 1 — Which codebase?
+
+Check `$ARGUMENTS` for a project path. If not provided, check `.claude/local.json` for known projects and ask which one. If no projects registered, ask for a path.
+
+### Step 2 — Analyze the codebase
+
+Read the project and infer patterns:
+
+**Language & Framework**
+- What language(s)? What framework(s)?
+- What build tool? What package manager?
+- TypeScript strict mode? ESLint config? Prettier config?
+
+**Code Style**
+- Naming conventions (camelCase, snake_case, PascalCase for what?)
+- File naming patterns (kebab-case.ts, PascalCase.tsx?)
+- Directory structure conventions
+- Import ordering patterns
+- Export style (named vs default)
+
+**Architecture Patterns**
+- How are modules organized?
+- What patterns are used? (adapters, factories, repositories, etc.)
+- How is state managed?
+- How are errors handled?
+- How are types/interfaces structured?
+
+**Testing**
+- What test framework?
+- Test file naming (*.test.ts, *_test.go, test_*.py?)
+- Test patterns (unit, integration, e2e?)
+- Mock patterns
+
+**Git**
+- Commit message format (conventional commits? free-form?)
+- Branch naming patterns
+- PR practices
+
+### Step 3 — Show findings
+
+Present what was found:
+
+```
+Analyzed: <project name> (<X files, Y lines>)
+
+Detected patterns:
+  Language:    TypeScript (strict mode)
+  Framework:   Express + tsup
+  Style:       camelCase vars, PascalCase types, kebab-case files
+  Tests:       Vitest, *.test.ts alongside source
+  Commits:     Conventional commits (feat:, fix:, chore:)
+  ...
+```
+
+Ask: "Does this look right? Anything I'm missing or got wrong?"
+
+### Step 4 — Generate standards doc
+
+Write a concise coding standards document:
+
+```markdown
+# Coding Standards — <project name>
+
+> Auto-generated from codebase analysis. Review and adjust as needed.
+
+## Language & Tools
+<what's used and how>
+
+## Naming
+| What | Convention | Example |
+|------|-----------|---------|
+| Variables | camelCase | `userName` |
+| Functions | camelCase | `getUserById` |
+| Types/Interfaces | PascalCase | `UserProfile` |
+| Files | kebab-case | `user-profile.ts` |
+| Constants | UPPER_SNAKE | `MAX_RETRIES` |
+
+## File Structure
+<how files are organized, what goes where>
+
+## Patterns
+<architectural patterns observed — with examples from the actual code>
+
+## Error Handling
+<how errors are handled in this codebase>
+
+## Testing
+<testing conventions, file locations, patterns>
+
+## Git
+<commit format, branch naming, PR process>
+```
+
+### Step 5 — Save
+
+Save to `engineering/coding-standards.md` in the brain. Update `engineering/CLAUDE.md` to reference it.
+
+This file becomes the source of truth for `/review` — code reviews will use these standards.
