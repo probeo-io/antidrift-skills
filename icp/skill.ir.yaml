@@ -1,0 +1,83 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "icp"
+description: "Build an Ideal Customer Profile. Researches a target persona, identifies pain points, buying triggers, and objections with real data."
+argument-hint: "<role or company type>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Builds a research-backed Ideal Customer Profile (ICP) for a target persona.
+
+## Instructions
+
+### Step 1 — Who are we profiling?
+
+Check `$ARGUMENTS` for the role or company type. If not provided, ask: "Who's the target? Give me a role (e.g. CMO at mid-size B2B SaaS) or company type."
+
+### Step 2 — Research
+
+Research the persona using web search. Find real data for each section — stats, quotes, reports. Don't make up numbers. Cite sources.
+
+Focus on:
+- Industry reports and surveys (Gartner, Forrester, McKinsey, etc.)
+- Community discussions (Reddit, LinkedIn, industry forums)
+- Job postings for this role (reveals real priorities)
+- Vendor case studies (reveals what they buy and why)
+
+### Step 3 — Build the ICP
+
+Write the profile in this structure:
+
+```markdown
+# ICP: <Role> at <Company Type>
+
+## Company Profile
+- **Size**: <employee range>
+- **Type**: <industry, business model>
+- **Growth stage**: <where they are — and when pain is highest>
+- **Revenue**: <range>
+
+## Role Profile
+- **Title**: <exact titles they use>
+- **Authority**: <what they can buy without approval>
+- **Tenure**: <when they're most likely to buy — new in role = highest>
+- **Reports to**: <who they answer to>
+
+---
+
+## Pain Points & Challenges
+
+### Primary Pressures
+<list with real stats and citations>
+
+### Day-to-Day Frustrations
+<operational pains, workflow issues>
+
+### What Keeps Them Up at Night
+<strategic fears, career risks>
+
+---
+
+## Buying Triggers
+<events that make them actively look for a solution>
+
+## Objections
+<why they say no, and what's really behind it>
+
+## Where They Hang Out
+<communities, publications, events, podcasts>
+
+## How They Buy
+<process, stakeholders, timeline, budget cycle>
+```
+
+### Step 4 — Validate
+
+For each claim, include the source. Mark anything you couldn't find data for with `[needs validation]`.
+
+### Step 5 — Save
+
+Save to `marketing/_reference/icps/icp-<slug>.md` in the brain. Update `marketing/CLAUDE.md` to reference it.
+
+Ask: "Want me to build AI twin personas from this ICP? Use `/twins`."

@@ -1,0 +1,68 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "voc"
+description: "Run a Voice of Customer analysis. Research how a persona talks about their problems, extract themes, and validate with real data."
+argument-hint: "<persona or ICP name>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Runs a Voice of Customer (VOC) analysis for a target persona. Captures how they actually describe their problems — in their words, not yours.
+
+## Instructions
+
+### Step 1 — Which persona?
+
+Check `$ARGUMENTS` for the persona or ICP name. If not provided, check `marketing/_reference/icps/` for existing ICPs and ask which one to analyze. If no ICPs exist, ask: "Who are we researching?"
+
+### Step 2 — Research their actual language
+
+Search for how this persona talks about their problems. Look in:
+- **Reddit** — subreddits where this persona hangs out
+- **LinkedIn** — posts, comments, articles by people in this role
+- **Community forums** — industry-specific communities
+- **Review sites** — G2, Capterra, TrustRadius (what they say about existing tools)
+- **Podcasts/interviews** — quotes from people in this role
+- **Job postings** — reveals what companies prioritize for this role
+
+Capture **exact language** — the words they use, not your interpretation. Look for:
+- How they describe the problem (not the solution)
+- Emotional language (frustrated, blind, overwhelmed, guessing)
+- Metaphors and analogies they use
+- What they've tried before and why it didn't work
+
+### Step 3 — Extract themes
+
+Group findings into themes. For each theme:
+
+```markdown
+## Theme: "<Name It in Their Words>"
+
+### How They Describe It
+- "<exact quote or paraphrase>" — source
+- "<exact quote>" — source
+
+### Frequency
+How often this comes up across sources (everywhere / common / occasional)
+
+### Emotional Intensity
+How strongly they feel about it (rage / frustration / annoyance / mild)
+
+### What They've Tried
+Previous solutions and why they failed
+
+### Implication for Us
+What this means for positioning, messaging, or product
+```
+
+### Step 4 — Cross-validate
+
+Check if themes appear across multiple ICPs (if you have more than one). Universal themes = strongest messaging angles.
+
+### Step 5 — Save
+
+Save to `marketing/_reference/voc/voc-<persona-slug>.md` in the brain.
+
+If this is the second or third VOC analysis, also update or create `marketing/_reference/voc/voc-common-themes.md` with themes that appear across all personas.
+
+Update `marketing/CLAUDE.md` to reference the new VOC research.

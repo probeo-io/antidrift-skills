@@ -1,0 +1,113 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "twins"
+description: "Create AI twin personas for market testing. Build a panel of realistic personas from your ICPs, then test messaging, pricing, or features against them."
+argument-hint: "<icp name> [count] | test <message>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Creates AI twin personas from ICPs for market testing. Each twin is a realistic person with a name, backstory, company context, and current pressures. Use them to test messaging, ads, pricing, or features before going to market.
+
+## Instructions
+
+### Mode 1: Build twins — `/twins <icp> [count]`
+
+#### Step 1 — Load the ICP
+
+Check `$ARGUMENTS` for an ICP name. Look in `marketing/_reference/icps/` for the matching profile. If not found, ask which ICP to use or offer to build one with `/icp`.
+
+Default count is 10 twins per ICP.
+
+#### Step 2 — Generate the panel
+
+For each twin, create a realistic persona:
+
+```markdown
+## <ICP-PREFIX>-<NUMBER>: <Full Name> — <One-Line Hook>
+
+**Profile:**
+- Age: <realistic for role>
+- Title: <exact title> at <Company Name> (<industry>, <size> employees, <revenue>)
+- Tenure: <how long in role — vary this, some new, some established>
+- Background: <career path that led here>
+- Reports to: <who>
+
+**Company Context:**
+- <what the company does — make it specific and realistic>
+- <key metrics relevant to the ICP's pain points>
+- <current situation that creates urgency>
+
+**Current Pressures:**
+- <3-4 specific, time-bound pressures drawn from the ICP>
+- <at least one that's personal/career-related>
+
+**Personality & Decision Style:**
+- <how they evaluate vendors — data-driven? relationship-driven? peer-influenced?>
+- <communication style — direct? diplomatic? skeptical?>
+- <what would make them say yes vs. what would make them say no>
+
+**Blind Spots:**
+- <what they don't know they don't know>
+- <assumptions they're making that might be wrong>
+```
+
+**Key rules for realistic twins:**
+- Vary tenure: some in first 90 days (highest urgency), some 1-2 years in, some veterans
+- Vary company size within the ICP range
+- Vary personality: some skeptics, some early adopters, some followers
+- Make company names realistic — not "TechCorp" but "Meridian Supply Chain Solutions"
+- Give them specific metrics and situations, not generic ones
+- Each twin should feel like someone you could actually meet
+
+#### Step 3 — Save
+
+Save to `marketing/_reference/twin-tests/<icp-slug>-twins.md`.
+
+### Mode 2: Test against twins — `/twins test <message>`
+
+#### Step 1 — Load the panel
+
+Read all twin files from `marketing/_reference/twin-tests/`.
+
+#### Step 2 — Run the test
+
+For each twin (or a random sample of 5-8 if the panel is large):
+
+Adopt the twin's persona completely. React to the message/ad/feature/pricing as that person would. Consider:
+- Would this get their attention? Why or why not?
+- What questions would they have?
+- What objections would they raise?
+- Would they forward this to someone? Who?
+- On a scale of 1-10, how likely to respond/buy/click?
+
+#### Step 3 — Synthesize
+
+After testing all twins, provide:
+
+```markdown
+## Test Results: "<what was tested>"
+
+### Overall Score: <X/10>
+
+### Who loved it (and why)
+<which twins responded positively and what resonated>
+
+### Who didn't (and why)
+<which twins were cold and what turned them off>
+
+### Strongest angles
+<what language/framing worked best across twins>
+
+### Weakest spots
+<what consistently failed or caused objections>
+
+### Recommended changes
+<specific edits based on twin reactions>
+```
+
+#### Step 4 — Save
+
+Save test results to `marketing/_reference/twin-tests/<slug>-test.md`.
+
+**Important:** Randomly sample from the panel for each test to prevent "pollution" — the same twins seeing too many variations loses objectivity. Note which twins were used in each test.
