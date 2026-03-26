@@ -2,6 +2,7 @@
   {"name":"changelog","description":"Generate a changelog from recent git commits across projects."},
   {"name":"decision","description":"Log a decision with context and reasoning. Use when a choice was made and the team should know why."},
   {"name":"followup","description":"Draft a follow-up email after a meeting using customer context and brand voice from the brain."},
+  {"name":"icp","description":"Build an Ideal Customer Profile. Researches a target persona, identifies pain points, buying triggers, and objections with real data."},
   {"name":"legal","description":"Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates with customer details filled in."},
   {"name":"prep","description":"Prep for a customer call — pulls account history, recent interactions, open issues from the brain."},
   {"name":"recap","description":"Show what changed in the brain since last recap. Use 'recap send' to write it as a shareable document."},
@@ -9,5 +10,7 @@
   {"name":"search","description":"Search across the entire brain for a topic, keyword, or question."},
   {"name":"spec","description":"Write a technical spec from a description, using architecture and project context from the brain."},
   {"name":"status","description":"Show brain health — departments, freshness, gaps, and coverage."},
+  {"name":"twins","description":"Create AI twin personas for market testing. Build a panel of realistic personas from your ICPs, then test messaging, pricing, or features against them."},
+  {"name":"voc","description":"Run a Voice of Customer analysis. Research how a persona talks about their problems, extract themes, and validate with real data."},
   {"name":"write","description":"Write anything — blog posts, emails, proposals, docs — using brand voice and brain context. Just say what you need."}
 ]
