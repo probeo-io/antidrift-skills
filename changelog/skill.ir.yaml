@@ -5,6 +5,7 @@ description: "Generate a changelog from recent git commits across projects."
 argument-hint: "[project-name] [--since <date>]"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Generates a human-readable changelog from git history.

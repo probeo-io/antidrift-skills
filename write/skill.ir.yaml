@@ -5,6 +5,7 @@ description: "Write anything — blog posts, emails, proposals, docs — using b
 argument-hint: "<what to write>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Writes content using the company's brand voice, product knowledge, and customer context from the brain.

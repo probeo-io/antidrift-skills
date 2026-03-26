@@ -5,6 +5,7 @@ description: "Log a decision with context and reasoning. Use when a choice was m
 argument-hint: "<what was decided>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Logs a decision so the team knows what was decided, why, and what was considered.

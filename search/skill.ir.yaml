@@ -5,6 +5,7 @@ description: "Search across the entire brain for a topic, keyword, or question."
 argument-hint: "<query>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Searches across the entire brain for relevant information.

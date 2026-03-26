@@ -5,6 +5,7 @@ description: "Generate legal documents (NDA, subscription agreement, demo agreem
 argument-hint: "<document-type> [customer-name]"
 auto-invoke: true
 source: "claude"
+pack: "legal"
 
 ---instructions---
 Generates legal documents from templates. Available documents:

@@ -5,6 +5,7 @@ description: "Create AI twin personas for market testing. Build a panel of reali
 argument-hint: "<icp name> [count] | test <message>"
 auto-invoke: true
 source: "claude"
+pack: "growth"
 
 ---instructions---
 Creates AI twin personas from ICPs for market testing. Each twin is a realistic person with a name, backstory, company context, and current pressures. Use them to test messaging, ads, pricing, or features before going to market.

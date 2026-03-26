@@ -5,6 +5,7 @@ description: "Write a technical spec from a description, using architecture and 
 argument-hint: "<feature or project name>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Writes a technical spec using the team's architecture and project context.

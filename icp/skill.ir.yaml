@@ -5,6 +5,7 @@ description: "Build an Ideal Customer Profile. Researches a target persona, iden
 argument-hint: "<role or company type>"
 auto-invoke: true
 source: "claude"
+pack: "growth"
 
 ---instructions---
 Builds a research-backed Ideal Customer Profile (ICP) for a target persona.

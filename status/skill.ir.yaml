@@ -4,6 +4,7 @@ name: "status"
 description: "Show brain health — departments, freshness, gaps, and coverage."
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Shows the current state of the brain — what's there, what's stale, what's missing.

@@ -5,6 +5,7 @@ description: "Prep for a customer call — pulls account history, recent interac
 argument-hint: "<customer name>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Prepares a briefing for a customer call using data from the brain.

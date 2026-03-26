@@ -5,6 +5,7 @@ description: "Code review using the team's coding standards and architecture con
 argument-hint: "<file or PR URL>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Reviews code using the team's standards and architecture context from the brain.

@@ -5,6 +5,7 @@ description: "Show what changed in the brain since last recap. Use 'recap send' 
 argument-hint: "[send]"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Shows what changed in the brain since the last time recap was run.

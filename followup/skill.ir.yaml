@@ -5,6 +5,7 @@ description: "Draft a follow-up email after a meeting using customer context and
 argument-hint: "<customer name>"
 auto-invoke: true
 source: "claude"
+pack: "essentials"
 
 ---instructions---
 Drafts a follow-up email after a customer meeting.

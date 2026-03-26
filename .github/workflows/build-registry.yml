@@ -24,9 +24,14 @@ jobs:
             [ ! -f "$file" ] && file="$dir/skill.ir.yaml"
             name=$(grep -m1 '^name:' "$file" | sed 's/^name:\s*//' | tr -d '"')
             desc=$(grep -m1 '^description:' "$file" | sed 's/^description:\s*//' | tr -d '"')
+            pack=$(grep -m1 '^pack:' "$file" | sed 's/^pack:\s*//' | tr -d '"')
             [ -z "$name" ] && continue
             if [ "$first" = true ]; then first=false; else echo "," >> registry.json; fi
-            printf '  {"name":"%s","description":"%s"}' "$name" "$desc" >> registry.json
+            if [ -n "$pack" ]; then
+              printf '  {"name":"%s","description":"%s","pack":"%s"}' "$name" "$desc" "$pack" >> registry.json
+            else
+              printf '  {"name":"%s","description":"%s"}' "$name" "$desc" >> registry.json
+            fi
           done
           echo "" >> registry.json
           echo "]" >> registry.json
