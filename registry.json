@@ -1,4 +1,14 @@
 [
-  {"name":"brains","description":"List connected brains and query across them. Read files from related brains without switching."},
-  {"name":"legal","description":"Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates with customer details filled in."}
+  {"name":"brains","description":"List connected brains and query across them. Read files from related brains without switching.","pack":"advanced"},
+  {"name":"legal","description":"Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates.","pack":"legal"},
+  {"name":"decision","description":"Log a decision with context and reasoning. Saves to decisions/ with alternatives and trade-offs.","pack":"essentials"},
+  {"name":"recap","description":"Show what changed in the brain since last recap. Use 'recap send' to write a shareable document.","pack":"essentials"},
+  {"name":"write","description":"Write anything — blog posts, emails, proposals, docs — using brand voice and brain context.","pack":"essentials"},
+  {"name":"review","description":"Code review using the team's coding standards and architecture context from the brain.","pack":"essentials"},
+  {"name":"spec","description":"Write a technical spec from a description, using architecture and project context.","pack":"essentials"},
+  {"name":"changelog","description":"Generate a changelog from recent git commits across projects.","pack":"essentials"},
+  {"name":"prep","description":"Prep for a customer call — pulls account history, recent interactions, open issues.","pack":"essentials"},
+  {"name":"followup","description":"Draft a follow-up email after a meeting using customer context and brand voice.","pack":"essentials"},
+  {"name":"status","description":"Show brain health — departments, freshness, gaps, and coverage.","pack":"essentials"},
+  {"name":"search","description":"Search across the entire brain for a topic, keyword, or question.","pack":"essentials"}
 ]

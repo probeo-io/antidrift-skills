@@ -1,0 +1,51 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "search"
+description: "Search across the entire brain for a topic, keyword, or question."
+argument-hint: "<query>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Searches across the entire brain for relevant information.
+
+## Instructions
+
+### Step 1 — What to search for?
+
+Check `$ARGUMENTS` for the query. If not provided, ask: "What are you looking for?"
+
+### Step 2 — Search
+
+Search across all brain files:
+
+```bash
+grep -ri "<query>" --include="*.md" -l .
+```
+
+Also read CLAUDE.md files from each department to check for relevant context that might not match a keyword search.
+
+### Step 3 — Present results
+
+Group results by department:
+
+```
+Search: "<query>"
+
+  engineering/
+    CLAUDE.md — "...context mentioning query..."
+    specs/auth-redesign.md — "...relevant snippet..."
+
+  product/
+    roadmap.md — "...relevant snippet..."
+
+  decisions/
+    2026-03-20-switch-to-pipeline.md — "...relevant snippet..."
+```
+
+Show the relevant snippet (2-3 lines of context) for each match.
+
+If nothing found, say so and suggest:
+- Broader search terms
+- Which departments might have related info
+- Whether the topic needs to be ingested

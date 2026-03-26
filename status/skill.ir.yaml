@@ -1,0 +1,63 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "status"
+description: "Show brain health — departments, freshness, gaps, and coverage."
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Shows the current state of the brain — what's there, what's stale, what's missing.
+
+## Instructions
+
+### Step 1 — Scan the brain
+
+Walk all directories. For each department (directory with a CLAUDE.md):
+- Read the CLAUDE.md
+- Check file count and total size
+- Check last modified date via git:
+  ```bash
+  git log -1 --format="%ci" -- <dir>/
+  ```
+- Check for `_[Add]_` placeholders (gaps)
+- Check if AGENTS.md exists and matches CLAUDE.md
+
+### Step 2 — Check projects
+
+Read `projects.md`. For each project:
+- Is it still in `.claude/local.json`?
+- When was it last ingested?
+
+### Step 3 — Present status
+
+```
+Brain Status
+═══════════════════════════════════════
+
+Departments (X total):
+  ✓ engineering     12 files    Updated 2 days ago
+  ✓ product          8 files    Updated today
+  ✓ customers        5 files    Updated 1 week ago
+  ⚠ marketing        3 files    Updated 3 weeks ago (stale)
+  ✗ finance          0 files    Empty — needs content
+
+Projects (X total):
+  ✓ anymodel         Last ingested Mar 25
+  ⚠ anyserp          Last ingested Mar 20 (stale)
+
+Gaps:
+  - marketing/CLAUDE.md has 3 unfilled placeholders
+  - No decisions/ directory
+  - finance/ is empty
+
+Sync:
+  ✓ All CLAUDE.md ↔ AGENTS.md in sync
+  (or: ⚠ 2 AGENTS.md files missing)
+```
+
+### Step 4 — Suggest actions
+
+Based on findings, suggest:
+- "Run `/ingest <path>` to update stale projects"
+- "Add content to finance/ — it's empty"
+- "Run `/push` to sync AGENTS.md files"

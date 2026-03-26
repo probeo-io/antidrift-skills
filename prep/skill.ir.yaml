@@ -1,0 +1,50 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "prep"
+description: "Prep for a customer call — pulls account history, recent interactions, open issues from the brain."
+argument-hint: "<customer name>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Prepares a briefing for a customer call using data from the brain.
+
+## Instructions
+
+### Step 1 — Which customer?
+
+Check `$ARGUMENTS` for the customer name. If not provided, list customers from `customers/CLAUDE.md` and ask which one.
+
+### Step 2 — Gather context
+
+Read everything available:
+- `customers/<name>/CLAUDE.md` — account overview
+- `customers/<name>/` — all files (agreements, notes, meeting history)
+- `sales/CLAUDE.md` — pipeline status if relevant
+- `product/CLAUDE.md` — any features they've requested or are waiting on
+- Recent git history for changes to their files
+
+### Step 3 — Build the briefing
+
+```
+## Call Prep: <Customer Name>
+
+### Account Summary
+<who they are, what they use, contract status>
+
+### Recent Activity
+<last interactions, emails, meetings>
+
+### Open Items
+<anything pending — features, issues, renewals>
+
+### Talking Points
+<suggested topics based on what's in the brain>
+
+### Watch Out
+<any risks, overdue items, complaints>
+```
+
+### Step 4 — Present
+
+Show the briefing. Keep it to one screen — this is a quick prep, not a report.

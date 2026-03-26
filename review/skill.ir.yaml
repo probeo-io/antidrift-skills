@@ -1,0 +1,59 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "review"
+description: "Code review using the team's coding standards and architecture context from the brain."
+argument-hint: "<file or PR URL>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Reviews code using the team's standards and architecture context from the brain.
+
+## Instructions
+
+### Step 1 — What to review?
+
+Check `$ARGUMENTS` for a file path, directory, or PR URL.
+
+If a PR URL: fetch the diff with `gh pr diff <number>`.
+If a file/directory: read the files.
+If nothing provided: check `git diff --staged` for staged changes, or ask what to review.
+
+### Step 2 — Load standards
+
+Read from the brain:
+- `engineering/CLAUDE.md` — architecture, patterns, conventions
+- `engineering/standards.md` or `engineering/coding-standards.md` if they exist
+- `projects.md` — for project-specific context
+
+If no engineering standards exist in the brain, use general best practices but mention "No team standards found in the brain — add them to engineering/ for team-specific reviews."
+
+### Step 3 — Review
+
+Review the code for:
+1. **Correctness** — bugs, logic errors, edge cases
+2. **Security** — injection, auth issues, exposed secrets
+3. **Team standards** — does it follow the conventions in the brain?
+4. **Readability** — naming, structure, unnecessary complexity
+5. **Performance** — obvious inefficiencies (don't over-optimize)
+
+### Step 4 — Present findings
+
+Format as:
+
+```
+## Review: <file or PR>
+
+### Issues
+- 🔴 **Critical:** <description> (line X)
+- 🟡 **Warning:** <description> (line X)
+- 🔵 **Style:** <description> (line X)
+
+### Good
+- <things done well>
+
+### Summary
+<1-2 sentence overall assessment>
+```
+
+If no issues found, say so. Don't invent problems.

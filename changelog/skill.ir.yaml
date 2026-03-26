@@ -1,0 +1,59 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "changelog"
+description: "Generate a changelog from recent git commits across projects."
+argument-hint: "[project-name] [--since <date>]"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Generates a human-readable changelog from git history.
+
+## Instructions
+
+### Step 1 — Which project?
+
+Check `$ARGUMENTS` for a project name. If provided, look up its local path in `.claude/local.json`.
+
+If no project specified, use the current directory.
+
+Check for `--since <date>` flag. Default to last tag or last 7 days.
+
+### Step 2 — Read git history
+
+```bash
+git log --oneline --since="<date>" --no-merges
+```
+
+Group commits by type:
+- **feat:** / **feature** → Added
+- **fix:** → Fixed
+- **docs:** → Documentation
+- **chore:** / **refactor:** → Changed
+- **breaking:** → Breaking Changes
+
+### Step 3 — Generate changelog
+
+Format as:
+
+```markdown
+## [Unreleased] — <date range>
+
+### Added
+- <feature descriptions>
+
+### Fixed
+- <bug fix descriptions>
+
+### Changed
+- <refactors, chores>
+```
+
+Summarize related commits into single entries. Don't list every commit — group them by feature.
+
+### Step 4 — Output
+
+Show the changelog. Offer to:
+- Append to the project's CHANGELOG.md
+- Copy to clipboard
+- Save as a standalone file

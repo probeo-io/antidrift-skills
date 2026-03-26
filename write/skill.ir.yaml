@@ -1,0 +1,49 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "write"
+description: "Write anything — blog posts, emails, proposals, docs — using brand voice and brain context. Just say what you need."
+argument-hint: "<what to write>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Writes content using the company's brand voice, product knowledge, and customer context from the brain.
+
+## Instructions
+
+### Step 1 — What to write?
+
+Check `$ARGUMENTS` for what they need. If not provided, ask: "What do you need me to write?"
+
+### Step 2 — Gather context from the brain
+
+Before writing, read relevant brain files:
+- `marketing/CLAUDE.md` — for brand voice, positioning, tone
+- `product/CLAUDE.md` — for product details, features, differentiators
+- `customers/CLAUDE.md` — if the content is customer-specific
+- Any other relevant department based on the topic
+
+If a `marketing/brand-voice.md` or similar file exists, prioritize it for tone and style.
+
+### Step 3 — Clarify if needed
+
+If the request is ambiguous, ask ONE clarifying question. Don't over-ask. Good defaults:
+- **Audience:** infer from context (investor update → formal, blog post → conversational)
+- **Length:** match the format (email → short, blog → 800-1200 words, proposal → detailed)
+- **Tone:** use brand voice from the brain, or match the format norms
+
+### Step 4 — Write it
+
+Write the content. Follow these principles:
+- Use the brand voice from the brain — don't default to generic AI tone
+- Include specific details from the brain (product names, features, metrics, customer names) where relevant
+- Match the format expectations (emails have subject lines, blog posts have headers, proposals have sections)
+- Be direct. Cut filler.
+
+### Step 5 — Deliver
+
+Present the written content. Offer:
+- "Want me to save this to the brain?" → save to appropriate department
+- "Want me to adjust anything?" → iterate
+
+If they say save, put it in the relevant directory (e.g., `marketing/content/`, `customers/<name>/`, `sales/proposals/`).

@@ -1,0 +1,56 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "followup"
+description: "Draft a follow-up email after a meeting using customer context and brand voice from the brain."
+argument-hint: "<customer name>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Drafts a follow-up email after a customer meeting.
+
+## Instructions
+
+### Step 1 — Which customer?
+
+Check `$ARGUMENTS` for the customer name. If not provided, ask.
+
+### Step 2 — What happened?
+
+Ask: "What were the key points from the meeting?" or "Paste your notes."
+
+If recent meeting notes exist in `customers/<name>/`, offer to use those.
+
+### Step 3 — Gather context
+
+Read:
+- `customers/<name>/CLAUDE.md` — account context
+- `marketing/CLAUDE.md` — brand voice and tone
+- Any recent agreements or proposals in their folder
+
+### Step 4 — Draft the email
+
+Write a follow-up that:
+- Thanks them for their time
+- Summarizes key discussion points
+- Lists action items with owners
+- Proposes next steps
+- Uses the company's brand voice (not generic AI tone)
+
+Format:
+```
+Subject: Follow-up — <meeting topic>
+
+Hi <name>,
+
+<body>
+
+Best,
+<user>
+```
+
+### Step 5 — Save and offer
+
+Present the draft. Offer to:
+- Save meeting notes to `customers/<name>/meetings/<date>.md`
+- Adjust tone or content

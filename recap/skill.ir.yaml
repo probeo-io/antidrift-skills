@@ -1,0 +1,73 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "recap"
+description: "Show what changed in the brain since last recap. Use 'recap send' to write it as a shareable document."
+argument-hint: "[send]"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Shows what changed in the brain since the last time recap was run.
+
+## Instructions
+
+### Step 1 — Find last recap
+
+Check for `.claude/last-recap` file. If it exists, read the timestamp. If not, default to 7 days ago.
+
+```bash
+cat .claude/last-recap 2>/dev/null || echo "7 days ago"
+```
+
+### Step 2 — Gather changes
+
+Read the git log since the last recap:
+
+```bash
+git log --since="<timestamp>" --oneline --name-only
+```
+
+Group changes by department/area:
+- Which CLAUDE.md files were modified?
+- Which departments had activity?
+- What files were added or changed?
+- Any new decisions logged?
+- Any new projects ingested?
+
+### Step 3 — Present the recap
+
+If `$ARGUMENTS` contains "send":
+- Write a formatted recap document suitable for sharing (email, Slack, etc.)
+- Include: date range, summary of changes per department, key highlights
+- Output it as a clean document
+
+Otherwise (interactive mode):
+- Show a concise summary of what changed
+- Group by department
+- Highlight the most important changes
+- Keep it short — this is a catch-up, not a report
+
+Example output:
+```
+Brain recap (Mar 20 – Mar 26):
+
+  Engineering (5 changes)
+    - Added anymodel pricing system
+    - Updated batch processing docs
+    - New project: @probeo/workflow
+
+  Product (2 changes)
+    - Updated roadmap priorities
+    - Logged decision: switch to per-item pipeline
+
+  Customers (1 change)
+    - Added Acme Corp account
+```
+
+### Step 4 — Save timestamp
+
+Write the current timestamp to `.claude/last-recap`:
+
+```bash
+date -u +"%Y-%m-%dT%H:%M:%SZ" > .claude/last-recap
+```

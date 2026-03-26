@@ -1,0 +1,77 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "spec"
+description: "Write a technical spec from a description, using architecture and project context from the brain."
+argument-hint: "<feature or project name>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Writes a technical spec using the team's architecture and project context.
+
+## Instructions
+
+### Step 1 — What's the spec for?
+
+Check `$ARGUMENTS` for the feature or project name. If not provided, ask: "What feature or project do you need a spec for?"
+
+### Step 2 — Gather context
+
+Read from the brain:
+- `engineering/CLAUDE.md` — architecture, stack, patterns
+- `product/CLAUDE.md` — product context, roadmap
+- `projects.md` — existing projects and their tech stacks
+- Any relevant project-specific files
+
+### Step 3 — Ask key questions
+
+Ask these one at a time (skip if already answered):
+- What problem does this solve?
+- Who's the user/consumer?
+- Any constraints or requirements?
+- Target timeline?
+
+### Step 4 — Write the spec
+
+```markdown
+# <Feature Name> — Technical Spec
+
+**Author:** <user>
+**Date:** <today>
+**Status:** Draft
+
+## Problem
+<what problem this solves>
+
+## Proposal
+<high-level approach>
+
+## Design
+
+### Architecture
+<how it fits into the existing system — reference brain context>
+
+### API / Interface
+<endpoints, function signatures, data shapes>
+
+### Data Model
+<if applicable>
+
+### Dependencies
+<what this depends on, what depends on this>
+
+## Implementation Plan
+1. <step>
+2. <step>
+3. <step>
+
+## Trade-offs
+<what was considered and why this approach was chosen>
+
+## Open Questions
+- <anything unresolved>
+```
+
+### Step 5 — Save
+
+Save to `engineering/specs/<slug>.md`. Create the directory if needed.

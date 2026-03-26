@@ -1,0 +1,58 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "decision"
+description: "Log a decision with context and reasoning. Use when a choice was made and the team should know why."
+argument-hint: "<what was decided>"
+auto-invoke: true
+source: "claude"
+
+---instructions---
+Logs a decision so the team knows what was decided, why, and what was considered.
+
+## Instructions
+
+### Step 1 — What was decided?
+
+Check `$ARGUMENTS` for the decision. If not provided, ask: "What decision was made?"
+
+### Step 2 — Gather context
+
+Ask (one at a time, skip if already clear):
+- **Why?** What drove this decision?
+- **Alternatives considered?** What else was on the table?
+- **Trade-offs?** What are you giving up?
+- **Who was involved?** Who made or influenced the call?
+
+### Step 3 — Write the decision record
+
+Create a file at `decisions/<date>-<slug>.md`:
+
+```markdown
+# <Decision Title>
+
+**Date:** <today>
+**Status:** Accepted
+**Decided by:** <names>
+
+## Context
+<what prompted the decision>
+
+## Decision
+<what was decided>
+
+## Alternatives Considered
+<what else was evaluated and why it was rejected>
+
+## Consequences
+<what this means going forward — trade-offs, follow-up work>
+```
+
+### Step 4 — Update navigation
+
+Add the decision to `decisions/CLAUDE.md` (create if it doesn't exist). Keep the list chronological, newest first.
+
+Also write `decisions/AGENTS.md` with the same content.
+
+### Step 5 — Confirm
+
+Show the decision record and tell them it's saved.
