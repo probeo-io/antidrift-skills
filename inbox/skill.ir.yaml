@@ -1,0 +1,122 @@
+# Antidrift Skill IR — do not edit manually
+
+name: "inbox"
+description: "Organize your inbox. Classifies emails using brain context, applies labels, archives. Run /inbox setup to configure your preferences."
+argument-hint: "[setup | check | process]"
+auto-invoke: true
+source: "claude"
+pack: "essentials"
+
+---instructions---
+Organizes your inbox by classifying emails using brain context and your personal preferences.
+
+## Modes
+
+### `/inbox setup` — Configure your preferences (first time)
+
+1. Fetch labels with `gmail_list_labels`
+2. Show the user their existing labels
+3. Ask: "Which labels do you want me to sort into? Any rules?"
+
+   Examples they might say:
+   - "Emails from customers go to Clients"
+   - "Newsletters go to Read Later"
+   - "Anything from @stripe.com goes to Finance"
+   - "Flag anything from my team as Priority"
+
+4. Save preferences to `.claude/local.json` under an `inbox` key:
+
+   ```json
+   {
+     "inbox": {
+       "labels": {
+         "Clients": "emails from known customers (check customers/ in the brain)",
+         "Finance": "invoices, payments, billing, stripe, bill.com",
+         "Priority": "from team members, urgent requests",
+         "Read Later": "newsletters, marketing, non-urgent updates",
+         "Ignore": "spam-like, unsubscribe candidates"
+       },
+       "rules": [
+         {"match": "from:*@stripe.com", "label": "Finance"},
+         {"match": "from:*@github.com", "label": "Engineering"}
+       ],
+       "autoArchive": ["Read Later", "Ignore"]
+     }
+   }
+   ```
+
+5. Create any labels that don't exist yet using `gmail_create_label`
+
+### `/inbox check` — Preview what would happen (dry run)
+
+1. Load preferences from `.claude/local.json`
+2. If no preferences, run setup first
+3. Fetch unread inbox: `gmail_search` with query `is:unread in:inbox`
+4. For each email, classify it:
+   - Check explicit rules first (from/to/subject matches)
+   - Check brain context (is this sender a customer? check `customers/CLAUDE.md`)
+   - Use the label descriptions to make a judgment call
+5. Show the plan WITHOUT taking action:
+
+   ```
+   Inbox: 12 unread messages
+
+     → Clients (3)
+       📧 Re: Q2 proposal — from: sarah@acme.com
+       📧 Invoice question — from: billing@foundationgroup.com
+       📧 Meeting notes — from: john@atlashxm.com
+
+     → Finance (2)
+       📧 Payment received — from: notifications@stripe.com
+       📧 March invoice — from: no-reply@bill.com
+
+     → Read Later (4)
+       📧 This week in AI — from: newsletter@deeplearning.ai
+       ...
+
+     → No action (3)
+       📧 Re: Project timeline — staying in inbox
+       ...
+
+   Apply these? (y/n)
+   ```
+
+6. If they say yes, apply. If no, let them adjust.
+
+### `/inbox` or `/inbox process` — Organize inbox (default)
+
+1. Load preferences from `.claude/local.json`
+2. If no preferences, run setup first
+3. Fetch unread inbox: `gmail_search` with query `is:unread in:inbox`
+4. For each email, classify using rules + brain context + label descriptions
+5. Apply labels with `gmail_add_label`
+6. For labels in `autoArchive`, also run `gmail_archive`
+7. Mark processed emails as read with `gmail_mark_read` (unless they're in Priority)
+8. Report:
+
+   ```
+   ✓ Processed 12 messages
+
+     Clients: 3 (archived)
+     Finance: 2 (archived)
+     Priority: 1 (kept in inbox)
+     Read Later: 4 (archived)
+     Skipped: 2 (left in inbox)
+   ```
+
+## Classification Logic
+
+When classifying, use this priority:
+
+1. **Explicit rules** — if a rule matches (from domain, subject keyword), use it
+2. **Brain context** — check `customers/CLAUDE.md` for known customer domains/names. Check `sales/CLAUDE.md` for prospects. Check `engineering/CLAUDE.md` for known services.
+3. **Label descriptions** — match the email content against label descriptions
+4. **When unsure** — leave in inbox, don't guess
+
+## Key Principles
+
+- **Never delete** — only label, archive, or mark read. Never trash or delete.
+- **Ask first time** — always run check mode before first process.
+- **Brain-aware** — a customer email is more important than a newsletter because the brain knows who customers are.
+- **Conservative** — if unsure, leave it in the inbox. Wrong classification is worse than no classification.
+- **Personal** — preferences are in `.claude/local.json`, never committed. Each person has their own setup.
