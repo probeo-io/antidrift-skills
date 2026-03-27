@@ -1,18 +1,35 @@
 # Antidrift Skill IR — do not edit manually
 
 name: "inbox"
-description: "Organize your inbox. Classifies emails using brain context, applies labels, archives. Run /inbox setup to configure your preferences."
-argument-hint: "[setup | check | process]"
+description: "Organize your inbox. Classifies emails by sender and subject, applies labels, archives noise. Requires mcp-gmail."
+argument-hint: "[setup | check | move <label> <search> | archive newsletters | archive notifications | archive older <days> | clean]"
 auto-invoke: true
 source: "claude"
-pack: "essentials"
+pack: "email"
 
 ---instructions---
 Organizes your inbox by classifying emails using brain context and your personal preferences.
 
+**Requires mcp-gmail.** Before doing anything, check that Gmail tools are available (e.g. `gmail_search`). If not connected, tell the user: "Gmail MCP is not connected. Run `antidrift connect gmail` first."
+
 ## Modes
 
-### `/inbox setup` — Configure your preferences (first time)
+### `/inbox` — Process unread (default)
+
+1. Load preferences from `.claude/local.json` under the `inbox` key
+2. If no preferences found, run setup first
+3. Fetch unread inbox: `gmail_search` with query `is:unread in:inbox`, format `metadata`
+4. For each email, classify using sender and subject only:
+   - Check explicit rules first (from domain, subject keyword matches)
+   - Check brain context (`customers/CLAUDE.md` for known customer domains, `sales/CLAUDE.md` for prospects)
+   - Match subject keywords against label descriptions
+   - **When unsure, leave in inbox** — wrong classification is worse than none
+5. Apply labels with `gmail_add_label`
+6. For labels in `autoArchive`, also run `gmail_archive`
+7. Mark processed emails as read with `gmail_mark_read` (unless Priority)
+8. Report summary
+
+### `/inbox setup` — Configure labels and rules
 
 1. Fetch labels with `gmail_list_labels`
 2. Show the user their existing labels
@@ -22,7 +39,6 @@ Organizes your inbox by classifying emails using brain context and your personal
    - "Emails from customers go to Clients"
    - "Newsletters go to Read Later"
    - "Anything from @stripe.com goes to Finance"
-   - "Flag anything from my team as Priority"
 
 4. Save preferences to `.claude/local.json` under an `inbox` key:
 
@@ -47,35 +63,32 @@ Organizes your inbox by classifying emails using brain context and your personal
 
 5. Create any labels that don't exist yet using `gmail_create_label`
 
-### `/inbox check` — Preview what would happen (dry run)
+### `/inbox check` — Dry run
 
 1. Load preferences from `.claude/local.json`
 2. If no preferences, run setup first
-3. Fetch unread inbox: `gmail_search` with query `is:unread in:inbox`
-4. For each email, classify it:
-   - Check explicit rules first (from/to/subject matches)
-   - Check brain context (is this sender a customer? check `customers/CLAUDE.md`)
-   - Use the label descriptions to make a judgment call
+3. Fetch unread inbox: `gmail_search` with query `is:unread in:inbox`, format `metadata`
+4. Classify each email using sender and subject only
 5. Show the plan WITHOUT taking action:
 
    ```
    Inbox: 12 unread messages
 
-     → Clients (3)
-       📧 Re: Q2 proposal — from: sarah@acme.com
-       📧 Invoice question — from: billing@foundationgroup.com
-       📧 Meeting notes — from: john@atlashxm.com
+     Clients (3)
+       Re: Q2 proposal — from: sarah@acme.com
+       Invoice question — from: billing@foundationgroup.com
+       Meeting notes — from: john@atlashxm.com
 
-     → Finance (2)
-       📧 Payment received — from: notifications@stripe.com
-       📧 March invoice — from: no-reply@bill.com
+     Finance (2)
+       Payment received — from: notifications@stripe.com
+       March invoice — from: no-reply@bill.com
 
-     → Read Later (4)
-       📧 This week in AI — from: newsletter@deeplearning.ai
+     Read Later (4)
+       This week in AI — from: newsletter@deeplearning.ai
        ...
 
-     → No action (3)
-       📧 Re: Project timeline — staying in inbox
+     No action (3)
+       Re: Project timeline — staying in inbox
        ...
 
    Apply these? (y/n)
@@ -83,45 +96,74 @@ Organizes your inbox by classifying emails using brain context and your personal
 
 6. If they say yes, apply. If no, let them adjust.
 
-### `/inbox` or `/inbox process` — Organize inbox (default)
+### `/inbox move <label> <search>` — Move matching emails to a label
 
-1. Load preferences from `.claude/local.json`
-2. If no preferences, run setup first
-3. Fetch unread inbox: `gmail_search` with query `is:unread in:inbox`
-4. For each email, classify using rules + brain context + label descriptions
-5. Apply labels with `gmail_add_label`
-6. For labels in `autoArchive`, also run `gmail_archive`
-7. Mark processed emails as read with `gmail_mark_read` (unless they're in Priority)
-8. Report:
+Move emails matching a search to a specific label.
 
-   ```
-   ✓ Processed 12 messages
+Examples:
+- `/inbox move Clients from:acme.com`
+- `/inbox move Finance subject:invoice`
+- `/inbox move Priority from:boss@company.com`
 
-     Clients: 3 (archived)
-     Finance: 2 (archived)
-     Priority: 1 (kept in inbox)
-     Read Later: 4 (archived)
-     Skipped: 2 (left in inbox)
-   ```
+1. Search with `gmail_search` using the provided search query
+2. Show matching messages and confirm with user
+3. Apply the label with `gmail_add_label`
+4. Archive if the label is in `autoArchive`
+
+### `/inbox archive newsletters` — Archive newsletter-type emails
+
+1. Search for newsletter patterns: `gmail_search` with queries like:
+   - `in:inbox from:newsletter@*`
+   - `in:inbox from:noreply@* subject:weekly`
+   - `in:inbox list:* category:promotions`
+   - `in:inbox unsubscribe` (in headers/subject)
+2. Show what will be archived, confirm with user
+3. Archive with `gmail_archive` and mark read with `gmail_mark_read`
+
+### `/inbox archive notifications` — Archive service notifications
+
+1. Search for notification patterns:
+   - `in:inbox from:*@github.com` (GitHub notifications)
+   - `in:inbox from:*@stripe.com` (Stripe alerts)
+   - `in:inbox from:noreply@* subject:notification`
+   - `in:inbox from:notifications@*`
+   - `in:inbox category:updates`
+2. Show what will be archived, confirm with user
+3. Archive with `gmail_archive` and mark read with `gmail_mark_read`
+
+### `/inbox archive older <days>` — Archive read messages older than N days
+
+1. Search: `gmail_search` with query `in:inbox is:read older_than:<days>d`
+2. Show count and sample of what will be archived
+3. Confirm with user
+4. Archive with `gmail_archive`
+
+### `/inbox clean` — Archive all noise
+
+Runs all three archive operations in sequence:
+1. Archive newsletters
+2. Archive notifications
+3. Archive read messages older than 14 days
+
+Confirm once before executing all three.
 
 ## Classification Logic
 
 **Only use sender (from) and subject line to classify. Never read email body content.**
 
-Use `gmail_search` to fetch messages with `format: 'metadata'` — only headers, not body.
+Use `gmail_search` with `format: 'metadata'` — only headers, not body.
 
-When classifying, use this priority:
-
+Priority order:
 1. **Explicit rules** — if a rule matches (from domain, subject keyword), use it
-2. **Brain context** — check `customers/CLAUDE.md` for known customer domains/names. Check `sales/CLAUDE.md` for prospects. Match sender email domain against known companies.
-3. **Subject keywords** — match subject line against label descriptions (e.g. "invoice" → Finance)
+2. **Brain context** — check `customers/CLAUDE.md` for known customer domains/names, `sales/CLAUDE.md` for prospects
+3. **Subject keywords** — match against label descriptions (e.g. "invoice" -> Finance)
 4. **When unsure** — leave in inbox, don't guess
 
 ## Key Principles
 
 - **Metadata only** — classify using sender and subject only. Never read email body.
 - **Never delete** — only label, archive, or mark read. Never trash or delete.
-- **Ask first time** — always run check mode before first process.
-- **Brain-aware** — a customer email is more important than a newsletter because the brain knows who customers are.
-- **Conservative** — if unsure, leave it in the inbox. Wrong classification is worse than no classification.
-- **Personal** — preferences are in `.claude/local.json`, never committed. Each person has their own setup.
+- **Conservative** — if unsure, leave it in the inbox.
+- **Brain-aware** — customer emails are more important than newsletters because the brain knows who customers are.
+- **Personal** — preferences are in `.claude/local.json`, never committed.
+- **Requires mcp-gmail** — always check that Gmail tools are available before proceeding.
