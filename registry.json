@@ -4,7 +4,7 @@
   {"name":"decision","description":"Log a decision with context and reasoning. Use when a choice was made and the team should know why.","pack":"essentials"},
   {"name":"followup","description":"Draft a follow-up email after a meeting using customer context and brand voice from the brain.","pack":"essentials"},
   {"name":"icp","description":"Build an Ideal Customer Profile. Researches a target persona, identifies pain points, buying triggers, and objections with real data.","pack":"customer-research"},
-  {"name":"inbox","description":"Organize your inbox. Classifies emails using brain context, applies labels, archives. Run /inbox setup to configure your preferences.","pack":"essentials"},
+  {"name":"inbox","description":"Organize your inbox. Classifies emails by sender and subject, applies labels, archives noise. Requires mcp-gmail.","pack":"email"},
   {"name":"incident","description":"Incident response — create a structured incident report with timeline, impact assessment, and action items.","pack":"security"},
   {"name":"legal","description":"Generate legal documents (NDA, subscription agreement, demo agreement, PSA, order form) from templates with customer details filled in.","pack":"legal"},
   {"name":"pentest-prep","description":"Prepare for a penetration test. Generates scope, checklists, and documentation for the engagement.","pack":"security"},
