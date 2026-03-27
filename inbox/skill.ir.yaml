@@ -106,15 +106,20 @@ Organizes your inbox by classifying emails using brain context and your personal
 
 ## Classification Logic
 
+**Only use sender (from) and subject line to classify. Never read email body content.**
+
+Use `gmail_search` to fetch messages with `format: 'metadata'` — only headers, not body.
+
 When classifying, use this priority:
 
 1. **Explicit rules** — if a rule matches (from domain, subject keyword), use it
-2. **Brain context** — check `customers/CLAUDE.md` for known customer domains/names. Check `sales/CLAUDE.md` for prospects. Check `engineering/CLAUDE.md` for known services.
-3. **Label descriptions** — match the email content against label descriptions
+2. **Brain context** — check `customers/CLAUDE.md` for known customer domains/names. Check `sales/CLAUDE.md` for prospects. Match sender email domain against known companies.
+3. **Subject keywords** — match subject line against label descriptions (e.g. "invoice" → Finance)
 4. **When unsure** — leave in inbox, don't guess
 
 ## Key Principles
 
+- **Metadata only** — classify using sender and subject only. Never read email body.
 - **Never delete** — only label, archive, or mark read. Never trash or delete.
 - **Ask first time** — always run check mode before first process.
 - **Brain-aware** — a customer email is more important than a newsletter because the brain knows who customers are.
